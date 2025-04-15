@@ -48,14 +48,24 @@ def get_table_details(fn, base_dir):
             continue
         column_name = column_details[1]
         column_type = column_details[2].lower()
+        if column_type == 'integer':
+            column_type = 'int'
         if column_type == 'bigint':
             column_type = 'long'
         if column_type == 'list':
             column_type = 'string' # some tables refer to non-existing type 'list'
+        if column_type == 'enum':
+            column_type = 'string' # some tables refer to non-existing type 'enum'
+        if column_type == 'nullablebool':
+            column_type = 'bool' # some tables refer to non-existing type 'nullablebool'
+        if column_type == 'boolean':
+            column_type = 'bool' # The bool and boolean data types are equivalent.
+        if not column_type:
+            continue
         if column_name == 'Column' or column_name.startswith('--') or not column_name:
             continue
         if not column_type in valid_types:
-            raise Exception(f"{column_type} is not a valid column type")
+            raise Exception(f"{column_type} is not a valid column type - table: {table_name} column_name: {column_name} column: {column_details}")
         details[column_name] = column_type
     return table_name, details
 
@@ -73,11 +83,13 @@ environments = {
          'base_dir': 'defender-docs',
          'glob': '*-table.md',
          'help': textwrap.dedent("""
-            git clone --depth=1 https://github.com/MicrosoftDocs/defender-docs
+            git clone --filter=blob:none --sparse --depth=1 https://github.com/MicrosoftDocs/defender-docs ; cd defender-docs ; git sparse-checkout set defender-docs/defender-xdr ; cd ..
         """),
         'magic_functions': [
+            'AssignedIPAddresses',
             'FileProfile',
-            'DeviceFromIP'
+            'DeviceFromIP',
+            'SeenBy'
         ]
     },
     'sentinel': {
@@ -85,7 +97,7 @@ environments = {
        'base_dir': 'azure-reference-other',
          'glob': '*.md',
        'help': textwrap.dedent("""
-            git clone https://github.com/MicrosoftDocs/azure-reference-other ; git checkout bea53845fef94ad4f1887d306e6618a34efefc01
+            git clone --depth=1 https://github.com/MicrosoftDocs/azure-reference-other ; cd azure-reference-other ; git checkout bea53845fef94ad4f1887d306e6618a34efefc01 ; cd ..
         """),
     }
 }
