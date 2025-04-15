@@ -85,7 +85,7 @@ environments = {
        'base_dir': 'azure-reference-other',
          'glob': '*.md',
        'help': textwrap.dedent("""
-            git clone https://github.com/MicrosoftDocs/azure-reference-other ; git checkout 97f4433e37c4a95922407dcc4c3014c4badb6881
+            git clone https://github.com/MicrosoftDocs/azure-reference-other ; git checkout bea53845fef94ad4f1887d306e6618a34efefc01
         """),
     }
 }
